@@ -1,6 +1,6 @@
 # Webapp Template (Immuto.js) 
 
-#### A webapp template for Immuto-integrated web applications.
+#### A complete template for Immuto-integrated web applications.
 
 ## Documentation
 You can find complete documentation for Immuto's libraries <a href="https://www.immuto.io/api-documentation"> here</a>. 
@@ -17,3 +17,6 @@ node app.js
 View in browser at localhost:8001
 
 EMAIL and PASSWORD env variables correspond to your org admin credentials.
+
+## Deploying
+You may easily deploy to Heroku with the included Procfile.
