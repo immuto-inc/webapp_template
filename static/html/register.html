@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en"> 
+
+<head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Register Account</title>
+
+        <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+
+        <script src="js/immuto.js"></script>
+        <script src="js/register.js"></script>
+</head>
+
+
+<body>
+    <div>
+      <form onsubmit="return false;">
+          <div class="form-group">
+              <label for="email-input">Immuto Email:</label><br>
+              <input type="email" class="form-control" id="email-input" placeholder="user@example.org" required>
+          </div>
+          <br>
+
+          <div class="form-group">
+          <label for="password-input">Password</label><br>
+              <input type="password" class="form-control" id="password-input" placeholder="********" required>
+          </div>
+          <br>
+
+          <label for="password-input">Repeat Password</label><br>
+              <input type="password" class="form-control" id="repeat-password-input" placeholder="********" required>
+          </div>
+          <br>
+
+          <button type="button" id='register-button' onclick="register()">Register</button>
+          <p class="error-message p-0 m-0 mt-1" id="upload-error"></p>
+      </form>
+    </div>
+
+    <div> 
+      <p>Already have an account? <a href="/login">login</a></p>
+    </div>
+
+</body>
+
+
+</html> 

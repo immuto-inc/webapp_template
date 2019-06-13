@@ -1,0 +1,37 @@
+{
+  "name": "webapp_template",
+  "version": "0.1.0",
+  "description": "A webapp template for Immuto-integrated web applications.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/immuto-inc/org_registration.git"
+  },
+  "keywords": [
+    "immuto",
+    "immuto-backend",
+    "session",
+    "management",
+    "security",
+    "blockchain",
+    "data",
+    "integrity",
+    "verification"
+  ],
+  "author": "Sebastian Coates",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/immuto-inc/webapp_template/issues"
+  },
+  "homepage": "https://github.com/immuto-inc/webapp_template#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie": "^0.4.0",
+    "express": "^4.17.1",
+    "immuto-backend": "^0.1.5",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
