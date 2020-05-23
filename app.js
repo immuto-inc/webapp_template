@@ -2,18 +2,19 @@
 var express = require('express');
 var path = require('path')
 var bodyParser = require('body-parser')
-var immuto = require('immuto-backend')
+var immuto = require('immuto-sdk')
 var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+var schedule = require('node-schedule');
 
 /* Project Modules */
 var auth = require(path.join(__dirname, 'modules', 'authentication.js'))
 var DB = require(path.join(__dirname, 'modules', 'database.js'))
 
 const DEFAULT_PORT = 8001
-const IMMUTO_HOST = process.env.IMMUTO_HOST || "https://dev.immuto.io" // dev env default 
+const IMMUTO_HOST = "https://dev.immuto.io" // dev env default 
 
 var app = express();
-var im = immuto.init(true, IMMUTO_HOST) // leave blank for production use
+var im = immuto.init(true, IMMUTO_HOST) // no params to set production use
 
 
 app.use(express.static(path.join(__dirname, 'static')));
@@ -88,59 +89,31 @@ app.post("/register-org-user", (req, res) => {
     // restrict registration as needed 
     let email = req.body.email 
 
-    var http = new XMLHttpRequest()
-    let sendstring = "email=" + email.toLowerCase()
-    sendstring += "&noEmail=true" // Causes API to respond with authToken rather than emailing user
-    sendstring += "&authToken=" + im.authToken // org admin authToken for permissioning new user registration
-    http.open("POST", IMMUTO_HOST + "/submit-org-member", true)
-    http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-    http.onreadystatechange = () => {
-        if (http.readyState == 4 && http.status == 200) {
-            let regToken = http.responseText
-            res.end(regToken)
-        } else if (http.readyState == 4) {
-            res.status(http.status).end(http.responseText)
-        }
-    }
-    http.send(sendstring)
-})
-
-app.post("/login-user", (req, res) => {
-    user_logged_in_immuto(req.body.authToken).then((userInfo) => {
-        auth.create_user_session(req.body.authToken, userInfo, res).then(() => {
-            res.status(204).end()
-        }).catch((err) => {
-            res.status(500).end("Internal error.") // more info if appropriate
-        })
-    }).catch((err) => {
-        if (err.code && err.code == 403) {
-            res.status(403).end("Unauthorized.")
-        } else {
-            res.status(500).end("Internal error.") // more info if appropriate
-        }
+    im.permission_new_user(email)
+    .then(regToken => res.status(200).end(regToken))
+    .catch(err => {
+        console.error(err)
+        res.status(500).end()
     })
 })
 
-/* APP Middleware */
-app.use(function(req, res, next){
-  res.status(404);
-
-  // respond with html page
-  if (req.accepts('html')) {
-    res.sendFile(path.join(__dirname, 'static', "html", '404.html'));
-    return;
-  }
-
-  // respond with json
-  if (req.accepts('json')) {
-    res.send({ error: 'Not found' });
-    return;
-  }
-
-  // default to plain-text. send()
-  res.type('txt').send('Not found');
-});
-
+app.post("/login-user", (req, res) => {
+    user_logged_in_immuto(req.body.authToken).then((userInfo) => { // verify against Immuto API
+        auth.create_user_session(req.body.authToken, userInfo, res).then(() => { // store for local use
+            res.status(204).end()
+        }).catch((err) => {
+            console.error(err)
+            res.status(500).end("Internal error.") 
+        })
+    }).catch((err) => {
+        if (err.code && err.code == 401) {
+            res.status(401).end("Unauthorized.")
+        } else {
+            console.error(err)
+            res.status(500).end("Internal error.") 
+        }
+    })
+})
 
 
 /***************************** Utility Functions ******************************/
@@ -185,7 +158,6 @@ function get_credentials() {
 
 
 /* APP START */
-
 let cred = get_credentials()
 console.log("Authenticating admin Immuto account.")
 im.authenticate(cred.email, cred.password).then(() => { // authentication lasts 24 hours
@@ -197,3 +169,24 @@ im.authenticate(cred.email, cred.password).then(() => { // authentication lasts 
     console.error("Error authenticating admin Immuto account:")
     console.error(err)
 })
+
+
+// Reauthenticate periodicatlly, credential expires after 24h
+// runs ``At minute 0 past every 6th hour''
+schedule.scheduleJob('0 */6 * * *', function() { 
+    im.deauthenticate()
+    .then(() => {
+      im.authenticate(cred.email, cred.password)
+      .then(() => {
+        console.log("Re-Authentication to Immuto successful.");
+      })
+      .catch(err => {
+        console.error("Error authenticating admin Immuto account:");
+        console.error(err);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      process.exit();
+    });
+});

@@ -13,7 +13,7 @@ exports.create_user_session = (authToken, userInfo, res) => {
             maxAge: 86400, // 1 day in seconds
         }));
 
-        // for HTTPS , use the following stricter security
+        // for HTTPS , recommended to use the following stricter security
         /*
         res.setHeader('Set-Cookie', cookie.serialize('credential', credential, {
             httpOnly: true,
@@ -69,21 +69,16 @@ exports.user_logged_in = (req) => {
 }
 
 function get_auth_token(req) {
+    if (req.query && req.query.authToken) {
+        return req.query.authToken 
+    }
+    if (req.body && req.body.authToken) {
+        return req.body.authToken
+    }
+
     let cookies = (cookie.parse(req.headers.cookie || ''));
-    if (!(utils.is_empty(cookies))) {
-        if (cookies.authToken) {
-            return cookies.authToken
-        }
-    }
-    if (req.query) {
-        if (req.query.authToken) {
-            return req.query.authToken 
-        }
-    }
-    if (req.body) {
-        if (req.body.authToken) {
-            return req.body.authToken
-        }
+    if (cookies && cookies.authToken) {
+        return cookies.authToken
     }
     return undefined
 }

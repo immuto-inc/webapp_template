@@ -17,6 +17,3 @@ node app.js
 View in browser at localhost:8001
 
 EMAIL and PASSWORD env variables correspond to your org admin credentials.
-
-## Deploying
-You may easily deploy to Heroku with the included Procfile.
