@@ -1254,7 +1254,7 @@
       "resolved": "https://registry.npmjs.org/ieee754/-/ieee754-1.1.13.tgz",
       "version": "1.1.13"
     },
-    "immuto-sdk": "^1.0.0",
+    "immuto-sdk": "^1.0.3",
     "inherits": {
       "integrity": "sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4=",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz",
